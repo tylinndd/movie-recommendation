@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <form id="movie-form">
+            <label for="movie-title">Enter a Movie Title:</label>
+            <input type="text" id="movie-title" name="movie-title" placeholder="e.g., Avatar" required>
+            <button type="submit">Get Recommendations</button>
+        </form>
+        <div id="recommendations">
+            <h2>Recommendations:</h2>
+            <ul id="recommendation-list"></ul>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('movie-form');
+        const recommendationList = document.getElementById('recommendation-list');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const movieTitle = document.getElementById('movie-title').value;
+
+            // Fetch recommendations from the backend
+            const response = await fetch(`/recommend?title=${encodeURIComponent(movieTitle)}`);
+            const recommendations = await response.json();
+
+            // Display recommendations
+            recommendationList.innerHTML = '';
+            recommendations.forEach(movie => {
+                const li = document.createElement('li');
+                li.textContent = movie;
+                recommendationList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

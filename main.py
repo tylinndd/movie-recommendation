@@ -1,45 +1,48 @@
-import numpy as np
+from flask import Flask, request, jsonify, send_from_directory
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+app = Flask(__name__)
 
-df = pd.read_csv("/Users/tylin/movie-recommendation/movie_dataset.csv")
+# Load and preprocess the dataset
+df = pd.read_csv("movie_dataset.csv")
+features = ["keywords", "cast", "genres", "director"]
+for feature in features:
+    df[feature] = df[feature].fillna('')
 
+def combine_features(row):
+    return row['keywords'] + ' ' + row['cast'] + ' ' + row['genres'] + ' ' + row['director']
+
+df["combined_features"] = df.apply(combine_features, axis=1)
+count_matrix = CountVectorizer().fit_transform(df["combined_features"])
+cosine_sim = cosine_similarity(count_matrix)
 
 def get_title_from_index(index):
     return df[df.index == index]["title"].values[0]
 
 def get_index_from_title(title):
-    return df[df.title == title]["index"].values[0]
-
-
-features = ["keywords","cast","genres","director"]
-for feature in features:
-    df[feature] = df[feature].fillna('')
-def combine_features(row):
     try:
-        return row['keywords'] + ' ' + row['cast'] + ' ' + row['genres'] + ' ' + row['director']
+        return df[df.title == title]["index"].values[0]
     except:
-        print("Error:", row)
+        return None
 
-df["combined_features"] = df.apply(combine_features, axis=1)
-print(df["combined_features"].head())      
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
+@app.route('/recommend', methods=['GET'])
+def recommend():
+    movie_title = request.args.get('title')
+    movie_index = get_index_from_title(movie_title)
+    if movie_index is None:
+        return jsonify([])
 
+    similar_movies = list(enumerate(cosine_sim[movie_index]))
+    sorted_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)[1:11]
+    recommendations = [get_title_from_index(movie[0]) for movie in sorted_movies]
+    return jsonify(recommendations)
 
-count_matrix = CountVectorizer().fit_transform(df["combined_features"])
+if __name__ == '__main__':
+    app.run(debug=True)
 
-cosine_similarity = cosine_similarity(count_matrix)
-movie_user_likes = "Avatar"
-movie = get_index_from_title(movie_user_likes)
-similar_movies = list(enumerate(cosine_similarity[movie]))
-similar_movies_sorted = sorted(similar_movies, key= lambda x:x[1],reverse = True)
-i=0
-for movie in similar_movies_sorted:
-    print(get_title_from_index(movie[0]))
-    i=i+1
-    if i>50:
-        break
-
- 
