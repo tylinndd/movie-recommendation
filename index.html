@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movie Recommendation</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -29,7 +28,8 @@
             const movieTitle = document.getElementById('movie-title').value;
 
             // Fetch recommendations from the backend
-            const response = await fetch(`/recommend?title=${encodeURIComponent(movieTitle)}`);
+            //const response = await fetch('/recommendtitle${encodeURIComponent(movieTitle)}');
+            const response = await fetch('/recommend?title=' +encodeURIComponent(movieTitle));
             const recommendations = await response.json();
 
             // Display recommendations
