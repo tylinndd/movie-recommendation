@@ -1,6 +1,6 @@
 # 🎬 Movie Recommendation System
 
-My love and passion for film drove me to build a machine learning-based movie recommendation system that suggests movies based on movie genres, cast, description, and director. Built as part of a learning project to explore recommender systems and data science techniques, I plan to add more functionalities and features as my knowledge grows.
+My love and passion for film drove me to build a machine learning-based movie recommendation system that suggests movies based on a movie's genres, cast, description, and director. Built as part of a learning project to explore recommender systems and data science techniques, I plan to add more functionalities and features as my knowledge grows.
 
 ## 📌 Features
 
