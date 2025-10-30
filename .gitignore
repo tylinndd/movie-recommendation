@@ -10,4 +10,6 @@ ENV/
 *.log
 .DS_Store
 *.pyc
+movies.db
+*.db
 

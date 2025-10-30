@@ -6,68 +6,501 @@
     <title>Movie Recommendation - Find Your Next Favorite Film</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Authentication Styles */
+        .auth-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .auth-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            border-color: #dc143c;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+            background: #dc143c;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: #b8112e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-switch a {
+            color: #dc143c;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-error {
+            background: #fee;
+            border-left: 4px solid #e74c3c;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            color: #c0392b;
+            font-size: 0.95em;
+        }
+
+        /* User Menu */
+        .user-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .user-button {
+            background: #fff;
+            color: #333;
+            padding: 12px 24px;
+            border: 2px solid #dc143c;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-button:hover {
+            background: #dc143c;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .user-button i {
+            font-size: 1.1em;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .user-dropdown.show {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .user-dropdown-item {
+            padding: 14px 20px;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .user-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-dropdown-item:hover {
+            background: #f8f8f8;
+        }
+
+        .user-dropdown-item i {
+            color: #dc143c;
+            width: 20px;
+        }
+
+        /* View Switcher */
+        .view-switcher {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .view-btn {
+            padding: 12px 24px;
+            border: 2px solid #dc143c;
+            background: #fff;
+            color: #333;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover, .view-btn.active {
+            background: #dc143c;
+            color: #fff;
+        }
+
+        /* Movie List Actions */
+        .movie-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .watchlist-btn {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .watchlist-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .watchlist-btn.added {
+            background: #666;
+        }
+
+        .watched-btn {
+            background: #2196F3;
+            color: #fff;
+        }
+
+        .watched-btn:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+
+        .watched-btn.added {
+            background: #666;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* List View */
+        .list-view {
+            margin-bottom: 40px;
+        }
+
+        .list-header {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .list-header h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .list-count {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .empty-list {
+            background: #fff;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .empty-list i {
+            font-size: 60px;
+            color: #dc143c;
+            margin-bottom: 20px;
+        }
+
+        .empty-list h3 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .empty-list p {
+            color: #666;
+            font-size: 1.1em;
+        }
+    </style>
 </head>
 <body>
     <div class="background-animation"></div>
     
-    <div class="container">
-        <div class="header">
-            <div class="logo">
+    <!-- User Menu (shown when logged in) -->
+    <div id="user-menu" class="user-menu hidden">
+        <button class="user-button" id="user-menu-btn">
+            <i class="fas fa-user"></i>
+            <span id="username-display"></span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-item" id="my-watchlist-btn">
+                <i class="fas fa-bookmark"></i>
+                <span>My Watchlist</span>
+            </div>
+            <div class="user-dropdown-item" id="my-watched-btn">
+                <i class="fas fa-check-circle"></i>
+                <span>Already Watched</span>
+            </div>
+            <div class="user-dropdown-item" id="browse-movies-btn">
                 <i class="fas fa-film"></i>
+                <span>Browse Movies</span>
             </div>
-            <h1>Movie Recommendation System</h1>
-            <p class="subtitle">Discover movies you'll love based on your favorites</p>
+            <div class="user-dropdown-item" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
         </div>
+    </div>
 
-        <div class="search-card">
-            <form id="movie-form">
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input 
-                        type="text" 
-                        id="movie-title" 
-                        name="movie-title" 
-                        placeholder="Enter a movie title (e.g., Avatar, The Matrix, Inception)" 
-                        required
-                        autocomplete="off">
-                    <button type="submit" class="search-btn">
-                        <span class="btn-text">Get Recommendations</span>
-                        <i class="fas fa-arrow-right btn-icon"></i>
-                    </button>
+    <div class="container">
+        <!-- Authentication View -->
+        <div id="auth-view" class="auth-container">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-film"></i>
                 </div>
-            </form>
-        </div>
+                <h1>Movie Recommendation System</h1>
+                <p class="subtitle">Create an account to save your watchlist</p>
+            </div>
 
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>Finding perfect movies for you...</p>
-        </div>
+            <div class="auth-card" id="login-card">
+                <div class="auth-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Login to your account</p>
+                </div>
+                <div id="login-error" class="auth-error hidden"></div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="auth-btn">Login</button>
+                </form>
+                <div class="auth-switch">
+                    Don't have an account? <a id="show-signup">Sign up</a>
+                </div>
+            </div>
 
-        <div id="error" class="error-message hidden">
-            <i class="fas fa-exclamation-circle"></i>
-            <p id="error-text"></p>
-        </div>
-
-        <!-- Searched Movie Section -->
-        <div id="searched-movie-section" class="searched-movie-section hidden">
-            <h2 class="section-title">You Searched For</h2>
-            <div id="searched-movie-card" class="searched-movie-card">
-                <!-- Dynamic content will be inserted here -->
+            <div class="auth-card hidden" id="signup-card">
+                <div class="auth-header">
+                    <h2>Create Account</h2>
+                    <p>Join us to start your movie journey</p>
+                </div>
+                <div id="signup-error" class="auth-error hidden"></div>
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required minlength="6">
+                    </div>
+                    <button type="submit" class="auth-btn">Sign Up</button>
+                </form>
+                <div class="auth-switch">
+                    Already have an account? <a id="show-login">Login</a>
+                </div>
             </div>
         </div>
 
-        <div id="recommendations" class="recommendations-section hidden">
-            <div class="section-header">
-                <h2>Recommended for You</h2>
-                <p class="result-count">Based on your interest in <span id="search-term"></span></p>
+        <!-- Main App View -->
+        <div id="app-view" class="hidden">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-film"></i>
+                </div>
+                <h1>Movie Recommendation System</h1>
+                <p class="subtitle">Discover movies you'll love based on your favorites</p>
             </div>
-            <div id="recommendation-list" class="recommendation-grid"></div>
-        </div>
 
-        <div id="empty-state" class="empty-state">
-            <i class="fas fa-popcorn"></i>
-            <h3>Ready to Discover Amazing Movies?</h3>
-            <p>Enter a movie title above to get personalized recommendations</p>
+            <!-- Browse Movies Section -->
+            <div id="browse-section">
+                <div class="search-card">
+                    <form id="movie-form">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input 
+                                type="text" 
+                                id="movie-title" 
+                                name="movie-title" 
+                                placeholder="Enter a movie title (e.g., Avatar, The Matrix, Inception)" 
+                                required
+                                autocomplete="off">
+                            <button type="submit" class="search-btn">
+                                <span class="btn-text">Get Recommendations</span>
+                                <i class="fas fa-arrow-right btn-icon"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Finding perfect movies for you...</p>
+                </div>
+
+                <div id="error" class="error-message hidden">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p id="error-text"></p>
+                </div>
+
+                <!-- Searched Movie Section -->
+                <div id="searched-movie-section" class="searched-movie-section hidden">
+                    <h2 class="section-title">You Searched For</h2>
+                    <div id="searched-movie-card" class="searched-movie-card">
+                        <!-- Dynamic content will be inserted here -->
+                    </div>
+                </div>
+
+                <div id="recommendations" class="recommendations-section hidden">
+                    <div class="section-header">
+                        <h2>Recommended for You</h2>
+                        <p class="result-count">Based on your interest in <span id="search-term"></span></p>
+                    </div>
+                    <div id="recommendation-list" class="recommendation-grid"></div>
+                </div>
+
+                <div id="empty-state" class="empty-state">
+                    <i class="fas fa-popcorn"></i>
+                    <h3>Ready to Discover Amazing Movies?</h3>
+                    <p>Enter a movie title above to get personalized recommendations</p>
+                </div>
+            </div>
+
+            <!-- Watchlist Section -->
+            <div id="watchlist-section" class="list-view hidden">
+                <div class="list-header">
+                    <h2><i class="fas fa-bookmark"></i> My Watchlist</h2>
+                    <p class="list-count"><span id="watchlist-count">0</span> movies to watch</p>
+                </div>
+                <div id="watchlist-content" class="recommendation-grid"></div>
+                <div id="watchlist-empty" class="empty-list">
+                    <i class="fas fa-bookmark"></i>
+                    <h3>Your Watchlist is Empty</h3>
+                    <p>Start adding movies you want to watch!</p>
+                </div>
+            </div>
+
+            <!-- Watched List Section -->
+            <div id="watched-section" class="list-view hidden">
+                <div class="list-header">
+                    <h2><i class="fas fa-check-circle"></i> Already Watched</h2>
+                    <p class="list-count"><span id="watched-count">0</span> movies watched</p>
+                </div>
+                <div id="watched-content" class="recommendation-grid"></div>
+                <div id="watched-empty" class="empty-list">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>No Movies Watched Yet</h3>
+                    <p>Mark movies as watched to keep track of what you've seen!</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -102,6 +535,9 @@
                     <h3>Overview</h3>
                     <p id="modal-description"></p>
                 </div>
+                <div class="movie-actions" id="modal-actions">
+                    <!-- Action buttons will be inserted here -->
+                </div>
             </div>
         </div>
     </div>
@@ -110,216 +546,6 @@
         <p>Powered by AI-driven movie recommendations</p>
     </footer>
 
-    <script>
-        const form = document.getElementById('movie-form');
-        const movieInput = document.getElementById('movie-title');
-        const recommendationList = document.getElementById('recommendation-list');
-        const recommendationsSection = document.getElementById('recommendations');
-        const loadingElement = document.getElementById('loading');
-        const errorElement = document.getElementById('error');
-        const errorText = document.getElementById('error-text');
-        const emptyState = document.getElementById('empty-state');
-        const searchTerm = document.getElementById('search-term');
-        const modal = document.getElementById('movie-modal');
-        const closeModalBtn = document.getElementById('close-modal');
-        const searchedMovieSection = document.getElementById('searched-movie-section');
-        const searchedMovieCard = document.getElementById('searched-movie-card');
-
-        // Modal functionality
-        function openModal(movie) {
-            document.getElementById('modal-title').textContent = movie.title;
-            document.getElementById('modal-tagline').textContent = movie.tagline || '';
-            document.getElementById('modal-release-date').textContent = movie.release_date;
-            document.getElementById('modal-runtime').textContent = movie.runtime ? `${movie.runtime} min` : 'N/A';
-            document.getElementById('modal-rating').textContent = movie.vote_average ? `${movie.vote_average}/10` : 'N/A';
-            document.getElementById('modal-description').textContent = movie.overview;
-            
-            // Parse and display genres
-            const genresContainer = document.getElementById('modal-genres');
-            genresContainer.innerHTML = '';
-            if (movie.genres) {
-                try {
-                    const genresArray = JSON.parse(movie.genres.replace(/'/g, '"'));
-                    genresArray.forEach(genre => {
-                        const genreTag = document.createElement('span');
-                        genreTag.className = 'genre-tag';
-                        genreTag.textContent = genre.name;
-                        genresContainer.appendChild(genreTag);
-                    });
-                } catch (e) {
-                    // If parsing fails, just display as text
-                    genresContainer.innerHTML = `<span class="genre-tag">${movie.genres}</span>`;
-                }
-            }
-            
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        closeModalBtn.addEventListener('click', closeModal);
-        modal.querySelector('.modal-overlay').addEventListener('click', closeModal);
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
-
-        // Function to create poster placeholder
-        function createPosterPlaceholder(movie) {
-            const container = document.createElement('div');
-            container.className = 'movie-poster-placeholder';
-            
-            // Generate a consistent gradient based on movie title
-            const gradients = [
-                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
-                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)'
-            ];
-            
-            const hash = movie.title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const gradient = gradients[hash % gradients.length];
-            
-            // Get first letter for icon
-            const firstLetter = movie.title.charAt(0).toUpperCase();
-            
-            // Get year from release date
-            const year = movie.release_date ? movie.release_date.split('-')[0] : '';
-            
-            // Get rating
-            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-            
-            container.style.background = gradient;
-            container.innerHTML = `
-                <div class="poster-content">
-                    <div class="poster-letter">${firstLetter}</div>
-                    <div class="poster-title">${movie.title}</div>
-                    <div class="poster-year">${year}</div>
-                    <div class="poster-rating">
-                        <i class="fas fa-star"></i> ${rating}
-                    </div>
-                </div>
-            `;
-            
-            return container;
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const movieTitle = movieInput.value.trim();
-
-            // Hide previous states
-            recommendationsSection.classList.add('hidden');
-            searchedMovieSection.classList.add('hidden');
-            errorElement.classList.add('hidden');
-            emptyState.classList.add('hidden');
-            loadingElement.classList.remove('hidden');
-
-            try {
-                const response = await fetch('/recommend?title=' + encodeURIComponent(movieTitle));
-                const data = await response.json();
-
-                loadingElement.classList.add('hidden');
-
-                if (data.error || !data.recommendations || data.recommendations.length === 0) {
-                    errorElement.classList.remove('hidden');
-                    errorText.textContent = `Sorry, we couldn't find "${movieTitle}". Please try another movie title.`;
-                    return;
-                }
-
-                // Display searched movie
-                const searchedMovie = data.searched_movie;
-                searchTerm.textContent = searchedMovie.title;
-                
-                searchedMovieCard.innerHTML = `
-                    <div class="searched-movie-info-full">
-                        <h3 class="searched-movie-title">${searchedMovie.title}</h3>
-                        ${searchedMovie.tagline ? `<p class="searched-movie-tagline">"${searchedMovie.tagline}"</p>` : ''}
-                        <div class="searched-movie-meta">
-                            <span class="meta-badge">
-                                <i class="fas fa-star"></i> ${searchedMovie.vote_average}/10
-                            </span>
-                            <span class="meta-badge">
-                                <i class="fas fa-calendar"></i> ${searchedMovie.release_date}
-                            </span>
-                            ${searchedMovie.runtime ? `<span class="meta-badge"><i class="fas fa-clock"></i> ${searchedMovie.runtime} min</span>` : ''}
-                        </div>
-                        <p class="searched-movie-overview">${searchedMovie.overview}</p>
-                        <div class="searched-movie-genres">
-                            ${searchedMovie.genres ? (() => {
-                                try {
-                                    const genresArray = JSON.parse(searchedMovie.genres.replace(/'/g, '"'));
-                                    return genresArray.map(g => `<span class="genre-badge">${g.name}</span>`).join('');
-                                } catch(e) {
-                                    return '';
-                                }
-                            })() : ''}
-                        </div>
-                    </div>
-                `;
-                
-                searchedMovieSection.classList.remove('hidden');
-                
-                // Display recommendations
-                recommendationList.innerHTML = '';
-                data.recommendations.forEach((movie, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'movie-card';
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    
-                    card.innerHTML = `
-                        <div class="movie-card-content-full">
-                            <h3 class="movie-title">${movie.title}</h3>
-                            <div class="movie-rating">
-                                <i class="fas fa-star"></i>
-                                <span>${movie.vote_average}/10</span>
-                            </div>
-                            <p class="movie-year">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
-                        </div>
-                    `;
-                    
-                    // Add click event to open modal
-                    card.addEventListener('click', () => openModal(movie));
-                    
-                    recommendationList.appendChild(card);
-                });
-
-                recommendationsSection.classList.remove('hidden');
-                
-                // Smooth scroll to searched movie
-                setTimeout(() => {
-                    searchedMovieSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-
-            } catch (error) {
-                loadingElement.classList.add('hidden');
-                errorElement.classList.remove('hidden');
-                errorText.textContent = 'Oops! Something went wrong. Please try again.';
-                console.error(error);
-            }
-        });
-
-        // Add input animation
-        movieInput.addEventListener('focus', function() {
-            this.parentElement.classList.add('focused');
-        });
-
-        movieInput.addEventListener('blur', function() {
-            this.parentElement.classList.remove('focused');
-        });
-    </script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

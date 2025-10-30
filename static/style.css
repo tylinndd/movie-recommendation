@@ -589,6 +589,315 @@ input[type="text"]:focus {
     z-index: 1;
 }
 
+/* Authentication Styles */
+.auth-container {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h2 {
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.auth-header p {
+    color: #666;
+    font-size: 1em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1em;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    border-color: #dc143c;
+    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #fff;
+    background: #dc143c;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    background: #b8112e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.auth-switch a {
+    color: #dc143c;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+.auth-error {
+    background: #fee;
+    border-left: 4px solid #e74c3c;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    color: #c0392b;
+    font-size: 0.95em;
+}
+
+/* User Menu */
+.user-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.user-button {
+    background: #fff;
+    color: #333;
+    padding: 12px 24px;
+    border: 2px solid #dc143c;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.user-button:hover {
+    background: #dc143c;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.user-button i {
+    font-size: 1.1em;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    min-width: 200px;
+    overflow: hidden;
+    display: none;
+}
+
+.user-dropdown.show {
+    display: block;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.user-dropdown-item {
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.user-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.user-dropdown-item:hover {
+    background: #f8f8f8;
+}
+
+.user-dropdown-item i {
+    color: #dc143c;
+    width: 20px;
+}
+
+/* Movie List Actions */
+.movie-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.watchlist-btn {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.watchlist-btn:hover:not(:disabled) {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+.watchlist-btn.added {
+    background: #666;
+}
+
+.watched-btn {
+    background: #2196F3;
+    color: #fff;
+}
+
+.watched-btn:hover:not(:disabled) {
+    background: #0b7dda;
+    transform: translateY(-2px);
+}
+
+.watched-btn.added {
+    background: #666;
+}
+
+.remove-btn {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.remove-btn:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* List View */
+.list-view {
+    margin-bottom: 40px;
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.list-header {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.list-header h2 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.list-header h2 i {
+    color: #dc143c;
+}
+
+.list-count {
+    font-size: 1.2em;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.empty-list {
+    background: #fff;
+    border-radius: 12px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.empty-list i {
+    font-size: 60px;
+    color: #dc143c;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.empty-list h3 {
+    color: #333;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.empty-list p {
+    color: #666;
+    font-size: 1.1em;
+    font-weight: 300;
+}
+
 /* Utility Classes */
 .hidden {
     display: none !important;
