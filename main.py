@@ -25,6 +25,14 @@ def get_title_from_index(index):
 
 def get_movie_details(index):
     movie = df[df.index == index].iloc[0]
+    # Use TMDB API poster path if available, otherwise use placeholder
+    # For now, we'll use OMDB API style poster with IMDB ID or create a nice placeholder
+    tmdb_id = int(movie["id"]) if pd.notna(movie["id"]) else None
+    
+    # Try constructing poster URL - TMDB uses poster_path which we need to fetch separately
+    # For now, using a reliable poster service that works with TMDB IDs
+    poster_url = f"https://image.tmdb.org/t/p/w500//{tmdb_id}.jpg" if tmdb_id else None
+    
     return {
         "title": movie["title"],
         "overview": movie["overview"] if pd.notna(movie["overview"]) else "No description available.",
@@ -32,7 +40,10 @@ def get_movie_details(index):
         "release_date": movie["release_date"] if pd.notna(movie["release_date"]) else "Unknown",
         "vote_average": float(movie["vote_average"]) if pd.notna(movie["vote_average"]) else 0,
         "runtime": int(movie["runtime"]) if pd.notna(movie["runtime"]) else 0,
-        "genres": movie["genres"] if pd.notna(movie["genres"]) else ""
+        "genres": movie["genres"] if pd.notna(movie["genres"]) else "",
+        "poster_url": poster_url,
+        "tmdb_id": tmdb_id,
+        "use_placeholder": True  # Flag to indicate we should use styled placeholder
     }
 
 def get_index_from_title(title):
@@ -50,12 +61,20 @@ def recommend():
     movie_title = request.args.get('title')
     movie_index = get_index_from_title(movie_title)
     if movie_index is None:
-        return jsonify([])
+        return jsonify({"error": "Movie not found", "searched_movie": None, "recommendations": []})
 
+    # Get details of the searched movie
+    searched_movie = get_movie_details(movie_index)
+    
+    # Get similar movies
     similar_movies = list(enumerate(cosine_sim[movie_index]))
     sorted_movies = sorted(similar_movies, key=lambda x: x[1], reverse=True)[1:11]
     recommendations = [get_movie_details(movie[0]) for movie in sorted_movies]
-    return jsonify(recommendations)
+    
+    return jsonify({
+        "searched_movie": searched_movie,
+        "recommendations": recommendations
+    })
 
 @app.route('/movie/<title>', methods=['GET'])
 def get_movie(title):

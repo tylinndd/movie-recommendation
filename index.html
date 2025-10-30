@@ -48,10 +48,18 @@
             <p id="error-text"></p>
         </div>
 
+        <!-- Searched Movie Section -->
+        <div id="searched-movie-section" class="searched-movie-section hidden">
+            <h2 class="section-title">You Searched For</h2>
+            <div id="searched-movie-card" class="searched-movie-card">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
         <div id="recommendations" class="recommendations-section hidden">
             <div class="section-header">
-                <h2>🎬 Recommended for You</h2>
-                <p class="result-count">Based on <span id="search-term"></span></p>
+                <h2>Recommended for You</h2>
+                <p class="result-count">Based on your interest in <span id="search-term"></span></p>
             </div>
             <div id="recommendation-list" class="recommendation-grid"></div>
         </div>
@@ -114,6 +122,8 @@
         const searchTerm = document.getElementById('search-term');
         const modal = document.getElementById('movie-modal');
         const closeModalBtn = document.getElementById('close-modal');
+        const searchedMovieSection = document.getElementById('searched-movie-section');
+        const searchedMovieCard = document.getElementById('searched-movie-card');
 
         // Modal functionality
         function openModal(movie) {
@@ -161,46 +171,123 @@
             }
         });
 
+        // Function to create poster placeholder
+        function createPosterPlaceholder(movie) {
+            const container = document.createElement('div');
+            container.className = 'movie-poster-placeholder';
+            
+            // Generate a consistent gradient based on movie title
+            const gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)'
+            ];
+            
+            const hash = movie.title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const gradient = gradients[hash % gradients.length];
+            
+            // Get first letter for icon
+            const firstLetter = movie.title.charAt(0).toUpperCase();
+            
+            // Get year from release date
+            const year = movie.release_date ? movie.release_date.split('-')[0] : '';
+            
+            // Get rating
+            const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+            
+            container.style.background = gradient;
+            container.innerHTML = `
+                <div class="poster-content">
+                    <div class="poster-letter">${firstLetter}</div>
+                    <div class="poster-title">${movie.title}</div>
+                    <div class="poster-year">${year}</div>
+                    <div class="poster-rating">
+                        <i class="fas fa-star"></i> ${rating}
+                    </div>
+                </div>
+            `;
+            
+            return container;
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const movieTitle = movieInput.value.trim();
 
             // Hide previous states
             recommendationsSection.classList.add('hidden');
+            searchedMovieSection.classList.add('hidden');
             errorElement.classList.add('hidden');
             emptyState.classList.add('hidden');
             loadingElement.classList.remove('hidden');
 
             try {
                 const response = await fetch('/recommend?title=' + encodeURIComponent(movieTitle));
-                const recommendations = await response.json();
+                const data = await response.json();
 
                 loadingElement.classList.add('hidden');
 
-                if (!recommendations || recommendations.length === 0) {
+                if (data.error || !data.recommendations || data.recommendations.length === 0) {
                     errorElement.classList.remove('hidden');
                     errorText.textContent = `Sorry, we couldn't find "${movieTitle}". Please try another movie title.`;
                     return;
                 }
 
-                // Update search term
-                searchTerm.textContent = `"${movieTitle}"`;
+                // Display searched movie
+                const searchedMovie = data.searched_movie;
+                searchTerm.textContent = searchedMovie.title;
+                
+                searchedMovieCard.innerHTML = `
+                    <div class="searched-movie-info-full">
+                        <h3 class="searched-movie-title">${searchedMovie.title}</h3>
+                        ${searchedMovie.tagline ? `<p class="searched-movie-tagline">"${searchedMovie.tagline}"</p>` : ''}
+                        <div class="searched-movie-meta">
+                            <span class="meta-badge">
+                                <i class="fas fa-star"></i> ${searchedMovie.vote_average}/10
+                            </span>
+                            <span class="meta-badge">
+                                <i class="fas fa-calendar"></i> ${searchedMovie.release_date}
+                            </span>
+                            ${searchedMovie.runtime ? `<span class="meta-badge"><i class="fas fa-clock"></i> ${searchedMovie.runtime} min</span>` : ''}
+                        </div>
+                        <p class="searched-movie-overview">${searchedMovie.overview}</p>
+                        <div class="searched-movie-genres">
+                            ${searchedMovie.genres ? (() => {
+                                try {
+                                    const genresArray = JSON.parse(searchedMovie.genres.replace(/'/g, '"'));
+                                    return genresArray.map(g => `<span class="genre-badge">${g.name}</span>`).join('');
+                                } catch(e) {
+                                    return '';
+                                }
+                            })() : ''}
+                        </div>
+                    </div>
+                `;
+                
+                searchedMovieSection.classList.remove('hidden');
                 
                 // Display recommendations
                 recommendationList.innerHTML = '';
-                recommendations.forEach((movie, index) => {
+                data.recommendations.forEach((movie, index) => {
                     const card = document.createElement('div');
                     card.className = 'movie-card';
                     card.style.animationDelay = `${index * 0.1}s`;
                     
                     card.innerHTML = `
-                        <div class="movie-number">${index + 1}</div>
-                        <div class="movie-content">
-                            <i class="fas fa-film movie-icon"></i>
+                        <div class="movie-card-content-full">
                             <h3 class="movie-title">${movie.title}</h3>
-                        </div>
-                        <div class="movie-hover-effect">
-                            <i class="fas fa-play-circle"></i>
+                            <div class="movie-rating">
+                                <i class="fas fa-star"></i>
+                                <span>${movie.vote_average}/10</span>
+                            </div>
+                            <p class="movie-year">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
                         </div>
                     `;
                     
@@ -212,15 +299,16 @@
 
                 recommendationsSection.classList.remove('hidden');
                 
-                // Smooth scroll to recommendations
+                // Smooth scroll to searched movie
                 setTimeout(() => {
-                    recommendationsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    searchedMovieSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
 
             } catch (error) {
                 loadingElement.classList.add('hidden');
                 errorElement.classList.remove('hidden');
                 errorText.textContent = 'Oops! Something went wrong. Please try again.';
+                console.error(error);
             }
         });
 
