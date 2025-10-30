@@ -36,7 +36,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # Configure CORS to allow credentials (cookies)
-CORS(app, supports_credentials=True, origins=['*'])
+# Must specify exact origins when using credentials - wildcard '*' is not allowed
+allowed_origins = []
+if is_production:
+    # Add your Render deployment URL here
+    render_url = os.environ.get('RENDER_EXTERNAL_URL', '')
+    if render_url:
+        allowed_origins.append(render_url)
+else:
+    # Local development
+    allowed_origins = ['http://localhost:5000', 'http://127.0.0.1:5000']
+
+CORS(app, supports_credentials=True, origins=allowed_origins if allowed_origins else None)
 
 # Database Models
 class User(UserMixin, db.Model):
