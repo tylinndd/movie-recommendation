@@ -45,7 +45,9 @@ async function initApp() {
 // Check if user is authenticated
 async function checkAuthStatus() {
     try {
-        const response = await fetch('/api/current_user');
+        const response = await fetch('/api/current_user', {
+            credentials: 'include'
+        });
         const data = await response.json();
         
         if (data.authenticated) {
@@ -147,6 +149,7 @@ async function handleLogin(e) {
         const response = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ username, password })
         });
 
@@ -178,6 +181,7 @@ async function handleSignup(e) {
         const response = await fetch('/api/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ username, email, password })
         });
 
@@ -199,7 +203,10 @@ async function handleSignup(e) {
 // Handle logout
 async function handleLogout() {
     try {
-        await fetch('/api/logout', { method: 'POST' });
+        await fetch('/api/logout', { 
+            method: 'POST',
+            credentials: 'include'
+        });
         currentUser = null;
         showAuthView();
         // Reset forms
@@ -240,7 +247,9 @@ function showWatchedView() {
 // Load watchlist
 async function loadWatchlist() {
     try {
-        const response = await fetch('/api/watchlist');
+        const response = await fetch('/api/watchlist', {
+            credentials: 'include'
+        });
         const data = await response.json();
 
         const watchlistContent = document.getElementById('watchlist-content');
@@ -270,7 +279,9 @@ async function loadWatchlist() {
 // Load watched list
 async function loadWatchedList() {
     try {
-        const response = await fetch('/api/watched');
+        const response = await fetch('/api/watched', {
+            credentials: 'include'
+        });
         const data = await response.json();
 
         const watchedContent = document.getElementById('watched-content');
@@ -504,6 +515,7 @@ async function addToWatchlist(movie, button = null) {
         const response = await fetch('/api/watchlist', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 movie_title: movie.title,
                 movie_data: movie
@@ -533,6 +545,7 @@ async function addToWatched(movie, button = null) {
         const response = await fetch('/api/watched', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({
                 movie_title: movie.title,
                 movie_data: movie
@@ -560,7 +573,8 @@ async function addToWatched(movie, button = null) {
 async function removeFromWatchlist(itemId) {
     try {
         const response = await fetch(`/api/watchlist/${itemId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
 
         if (response.ok) {
@@ -575,7 +589,8 @@ async function removeFromWatchlist(itemId) {
 async function removeFromWatched(itemId) {
     try {
         const response = await fetch(`/api/watched/${itemId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
 
         if (response.ok) {

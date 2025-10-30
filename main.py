@@ -20,12 +20,23 @@ if database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Configure session cookies
+# Use secure cookies only in production (Render uses HTTPS)
+is_production = os.environ.get('DATABASE_URL') is not None
+app.config['SESSION_COOKIE_SECURE'] = is_production  # Only send cookies over HTTPS in production
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to session cookie
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # CSRF protection
+app.config['REMEMBER_COOKIE_SECURE'] = is_production
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+
 # Initialize extensions
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-CORS(app)
+
+# Configure CORS to allow credentials (cookies)
+CORS(app, supports_credentials=True, origins=['*'])
 
 # Database Models
 class User(UserMixin, db.Model):
