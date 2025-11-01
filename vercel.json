@@ -1,11 +1,4 @@
 {
-  "functions": {
-    "api/**/*.py": {
-      "runtime": "python3.11",
-      "maxDuration": 10,
-      "memory": 1024
-    }
-  },
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/api/index.py" },
