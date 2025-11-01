@@ -73,6 +73,10 @@ class WatchedList(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Ensure database tables exist when running under a WSGI server (e.g., Render)
+with app.app_context():
+    db.create_all()
+
 # Load and preprocess the dataset (use absolute paths for Vercel)
 df = pd.read_csv(os.path.join(BASE_DIR, "movie_dataset.csv"))
 p_df = pd.read_csv(os.path.join(BASE_DIR, "MovieGenre.csv"), encoding='latin1')  # or try 'iso-8859-1' or 'cp1252'
