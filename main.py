@@ -12,8 +12,12 @@ import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
-# Use PostgreSQL on Render, SQLite locally
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///movies.db')
+# Resolve project root for file access in serverless environments
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Use DATABASE_URL if provided; otherwise default to a local SQLite file next to this script
+default_sqlite_uri = 'sqlite:///' + os.path.join(BASE_DIR, 'movies.db')
+database_url = os.environ.get('DATABASE_URL', default_sqlite_uri)
 # Fix for Render's postgres:// URL (SQLAlchemy needs postgresql://)
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
@@ -69,9 +73,9 @@ class WatchedList(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Load and preprocess the dataset
-df = pd.read_csv("movie_dataset.csv")
-p_df = pd.read_csv("MovieGenre.csv", encoding='latin1')  # or try 'iso-8859-1' or 'cp1252'
+# Load and preprocess the dataset (use absolute paths for Vercel)
+df = pd.read_csv(os.path.join(BASE_DIR, "movie_dataset.csv"))
+p_df = pd.read_csv(os.path.join(BASE_DIR, "MovieGenre.csv"), encoding='latin1')  # or try 'iso-8859-1' or 'cp1252'
 
 features = ["keywords", "cast", "genres", "director"]
 for feature in features:
@@ -320,7 +324,7 @@ def check_movie_status(title):
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(BASE_DIR, 'index.html')
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
