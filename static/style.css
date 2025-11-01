@@ -64,6 +64,13 @@ body {
     animation: bounce 2s infinite;
 }
 
+/* Brand logo image inside the header */
+.brand-logo {
+    width: 96px;
+    height: auto;
+    display: inline-block;
+}
+
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
