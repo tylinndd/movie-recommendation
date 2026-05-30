@@ -47,6 +47,16 @@ The UI lives in `frontend/` so Vercel does not auto-detect Flask from `main.py` 
 
 `npm run build` writes `static/config.js` so the browser calls the Render API.
 
+### Troubleshooting: "Serverless Function has crashed" (500)
+
+That means Vercel is still trying to run **Flask/Python** instead of static files. Common causes:
+
+1. **Root Directory is not `frontend`** — Vercel sees `main.py` at the repo root and deploys a Python function that crashes (large CSV, timeouts).
+2. **Framework preset is Flask/Python** — change to **Other** in Project Settings.
+3. Fix both, then **Redeploy** (not just visit the old URL).
+
+A working Vercel deploy serves HTML directly; it does **not** run your Flask app (that stays on Render).
+
 ---
 
 ## 3. Wire frontend → backend
