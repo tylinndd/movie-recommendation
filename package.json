@@ -1,0 +1,8 @@
+{
+  "name": "film-fanatic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/generate-config.js"
+  }
+}

@@ -1,3 +1,10 @@
+const API_BASE = (window.API_BASE || '').replace(/\/$/, '');
+
+function apiUrl(path) {
+    const normalized = path.startsWith('/') ? path : `/${path}`;
+    return `${API_BASE}${normalized}`;
+}
+
 // Authentication State
 let currentUser = null;
 let currentView = 'browse'; // browse, watchlist, watched
@@ -45,7 +52,7 @@ async function initApp() {
 // Check if user is authenticated
 async function checkAuthStatus() {
     try {
-        const response = await fetch('/api/current_user', {
+        const response = await fetch(apiUrl('/api/current_user'), {
             credentials: 'include'
         });
         const data = await response.json();
@@ -146,7 +153,7 @@ async function handleLogin(e) {
     const password = document.getElementById('login-password').value;
 
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch(apiUrl('/api/login'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -178,7 +185,7 @@ async function handleSignup(e) {
     const password = document.getElementById('signup-password').value;
 
     try {
-        const response = await fetch('/api/signup', {
+        const response = await fetch(apiUrl('/api/signup'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -203,7 +210,7 @@ async function handleSignup(e) {
 // Handle logout
 async function handleLogout() {
     try {
-        await fetch('/api/logout', { 
+        await fetch(apiUrl('/api/logout'), { 
             method: 'POST',
             credentials: 'include'
         });
@@ -247,7 +254,7 @@ function showWatchedView() {
 // Load watchlist
 async function loadWatchlist() {
     try {
-        const response = await fetch('/api/watchlist', {
+        const response = await fetch(apiUrl('/api/watchlist'), {
             credentials: 'include'
         });
         const data = await response.json();
@@ -279,7 +286,7 @@ async function loadWatchlist() {
 // Load watched list
 async function loadWatchedList() {
     try {
-        const response = await fetch('/api/watched', {
+        const response = await fetch(apiUrl('/api/watched'), {
             credentials: 'include'
         });
         const data = await response.json();
@@ -320,7 +327,7 @@ async function handleMovieSearch(e) {
     loadingElement.classList.remove('hidden');
 
     try {
-        const response = await fetch('/recommend?title=' + encodeURIComponent(movieTitle));
+        const response = await fetch(apiUrl('/recommend?title=' + encodeURIComponent(movieTitle)));
         const data = await response.json();
 
         loadingElement.classList.add('hidden');
@@ -512,7 +519,7 @@ function setupListActionButtons(card, movie, itemId, listType) {
 // Add to watchlist
 async function addToWatchlist(movie, button = null) {
     try {
-        const response = await fetch('/api/watchlist', {
+        const response = await fetch(apiUrl('/api/watchlist'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -542,7 +549,7 @@ async function addToWatchlist(movie, button = null) {
 // Add to watched list
 async function addToWatched(movie, button = null) {
     try {
-        const response = await fetch('/api/watched', {
+        const response = await fetch(apiUrl('/api/watched'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -572,7 +579,7 @@ async function addToWatched(movie, button = null) {
 // Remove from watchlist
 async function removeFromWatchlist(itemId) {
     try {
-        const response = await fetch(`/api/watchlist/${itemId}`, {
+        const response = await fetch(apiUrl(`/api/watchlist/${itemId}`), {
             method: 'DELETE',
             credentials: 'include'
         });
@@ -588,7 +595,7 @@ async function removeFromWatchlist(itemId) {
 // Remove from watched list
 async function removeFromWatched(itemId) {
     try {
-        const response = await fetch(`/api/watched/${itemId}`, {
+        const response = await fetch(apiUrl(`/api/watched/${itemId}`), {
             method: 'DELETE',
             credentials: 'include'
         });

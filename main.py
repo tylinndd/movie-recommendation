@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 import os
+import re
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
@@ -24,14 +25,27 @@ if database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Configure session cookies
-# Use secure cookies only in production (Render uses HTTPS)
-is_production = os.environ.get('DATABASE_URL') is not None
-app.config['SESSION_COOKIE_SECURE'] = is_production  # Only send cookies over HTTPS in production
-app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent JavaScript access to session cookie
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # CSRF protection
-app.config['REMEMBER_COOKIE_SECURE'] = is_production
+# Production: Render with Postgres and/or separate Vercel frontend
+is_production = bool(
+    os.environ.get('DATABASE_URL')
+    or os.environ.get('RENDER')
+    or os.environ.get('FRONTEND_URL')
+)
+cross_origin_frontend = bool(
+    os.environ.get('FRONTEND_URL') or os.environ.get('FRONTEND_ORIGIN_REGEX')
+)
+
+# Session cookies: cross-site (Vercel → Render) needs SameSite=None + Secure
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+if cross_origin_frontend:
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+    app.config['REMEMBER_COOKIE_SECURE'] = True
+else:
+    app.config['SESSION_COOKIE_SECURE'] = is_production
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['REMEMBER_COOKIE_SECURE'] = is_production
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -39,10 +53,30 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Configure CORS to allow credentials (cookies)
-# Since frontend and backend are served from the same Flask app (same-origin),
-# CORS headers are added but same-origin requests will work automatically
-CORS(app, supports_credentials=True)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return jsonify({'error': 'Unauthorized'}), 401
+
+
+def _cors_origins():
+    origins = [
+        origin.strip().rstrip('/')
+        for origin in os.environ.get('FRONTEND_URL', '').split(',')
+        if origin.strip()
+    ]
+    origin_regex = os.environ.get('FRONTEND_ORIGIN_REGEX', '').strip()
+    if origin_regex:
+        origins.append(re.compile(origin_regex))
+    return origins
+
+
+_cors_origin_list = _cors_origins()
+if _cors_origin_list:
+    CORS(app, supports_credentials=True, origins=_cors_origin_list)
+else:
+    # Monolith / local: same-origin; Flask-CORS allows same-origin with credentials
+    CORS(app, supports_credentials=True)
 
 # Database Models
 class User(UserMixin, db.Model):
@@ -325,6 +359,11 @@ def check_movie_status(title):
         'in_watchlist': in_watchlist,
         'in_watched': in_watched
     }), 200
+
+@app.route('/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
+
 
 @app.route('/')
 def index():

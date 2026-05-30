@@ -1,11 +1,7 @@
 {
+  "buildCommand": "npm run build",
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "/api/index.py" },
-    { "src": "/recommend", "dest": "/api/index.py" },
-    { "src": "/movie/(.*)", "dest": "/api/index.py" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
-
-

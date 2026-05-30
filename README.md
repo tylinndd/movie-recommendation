@@ -3,6 +3,17 @@
 My love and passion for film drove me to build a machine learning-based movie recommendation system that suggests movies based on a movie's genres, cast, description, and director. Built as part of a learning project to explore recommender systems and data science techniques, I plan to add more functionalities and features as my knowledge grows.
 https://filmfanatic.onrender.com/
 
+## 🚀 Deployment
+
+Production is split: static UI on **Vercel**, Flask API on **Render** (with PostgreSQL for user data). Step-by-step setup: **[DEPLOYMENT.md](DEPLOYMENT.md)**.
+
+| Service | Role |
+|---------|------|
+| Vercel | `index.html`, CSS, JS — set `API_URL` to your Render URL at build time |
+| Render | Flask, ML recommendations, auth, database |
+
+You can also run everything on Render only (single URL, no CORS) as at [filmfanatic.onrender.com](https://filmfanatic.onrender.com).
+
 ## 🧠 Technologies Used
 
 - **Backend**: Python, Flask
@@ -10,7 +21,7 @@ https://filmfanatic.onrender.com/
 - **Authentication**: Flask-Login, Flask-Bcrypt
 - **Machine Learning**: Scikit-learn, Pandas
 - **Frontend**: HTML, CSS, JavaScript
-- **Deployment**: Vercel/Render compatible
+- **Deployment**: Vercel (frontend) + Render (backend) — see [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## 📌 Features
 
