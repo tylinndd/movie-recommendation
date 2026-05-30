@@ -34,15 +34,18 @@ Free Render web services spin down after inactivity; the first request after sle
 
 ## 2. Deploy the frontend on Vercel
 
-1. Import the same GitHub repo in Vercel.
-2. **Framework preset:** Other  
-3. **Build command:** `npm run build`  
-4. **Output directory:** leave default (project root; `index.html` at root).
-5. **Environment variable (Production):**
-   - `API_URL` = your Render service URL (no trailing slash), e.g. `https://filmfanatic.onrender.com`
-6. Deploy.
+The UI lives in `frontend/` so Vercel does not auto-detect Flask from `main.py` at the repo root.
 
-`npm run build` writes `static/config.js` so the browser calls the Render API. `.vercelignore` keeps Python and CSV files off Vercel uploads.
+1. Import the same GitHub repo in Vercel.
+2. **Root Directory:** `frontend` (Project Settings → General)
+3. **Framework preset:** Other (or leave as detected; `vercel.json` sets `"framework": null`)
+4. **Build command:** `npm run build` (default from `frontend/vercel.json`)
+5. **Output directory:** leave default (`.`)
+6. **Environment variable (Production):**
+   - `API_URL` = your Render service URL (no trailing slash), e.g. `https://filmfanatic.onrender.com`
+7. Deploy.
+
+`npm run build` writes `static/config.js` so the browser calls the Render API.
 
 ---
 
@@ -69,6 +72,7 @@ python main.py
 **Frontend against remote API:**
 
 ```bash
+cd frontend
 API_URL=https://filmfanatic.onrender.com npm run build
 python -m http.server 3000
 # Open http://localhost:3000 and set FRONTEND_URL on Render to http://localhost:3000 for CORS

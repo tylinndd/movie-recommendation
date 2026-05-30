@@ -9,7 +9,7 @@ Production is split: static UI on **Vercel**, Flask API on **Render** (with Post
 
 | Service | Role |
 |---------|------|
-| Vercel | `index.html`, CSS, JS — set `API_URL` to your Render URL at build time |
+| Vercel | `frontend/` — set Root Directory to `frontend` and `API_URL` to your Render URL at build time |
 | Render | Flask, ML recommendations, auth, database |
 
 You can also run everything on Render only (single URL, no CORS) as at [filmfanatic.onrender.com](https://filmfanatic.onrender.com).

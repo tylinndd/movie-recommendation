@@ -10,11 +10,16 @@ from datetime import datetime
 import os
 import re
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
-
 # Resolve project root for file access in serverless environments
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+
+app = Flask(
+    __name__,
+    static_folder=os.path.join(FRONTEND_DIR, 'static'),
+    static_url_path='/static',
+)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production')
 
 # Use DATABASE_URL if provided; otherwise default to a local SQLite file next to this script
 default_sqlite_uri = 'sqlite:///' + os.path.join(BASE_DIR, 'movies.db')
@@ -367,7 +372,7 @@ def health():
 
 @app.route('/')
 def index():
-    return send_from_directory(BASE_DIR, 'index.html')
+    return send_from_directory(FRONTEND_DIR, 'index.html')
 
 @app.route('/recommend', methods=['GET'])
 def recommend():
